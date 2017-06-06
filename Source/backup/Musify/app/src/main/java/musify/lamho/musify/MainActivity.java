@@ -10,17 +10,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide();
         playlistClick(findViewById(R.id.btnPlaylist));
     }
     public void searchClick(View view)
     {
         View playlist = findViewById(R.id.btnPlaylist);
         View explorer = findViewById(R.id.btnExplorer);
-       // final EditText edittext = (EditText)view;
-        //Récupère l'input et le bouton paramètre
+        final EditText edittext = (EditText)view;
+        //Ràcupère l'input et le bouton paramètre
         View input_search = findViewById(R.id.input_search);
         View settings = findViewById(R.id.btnParameter);
 

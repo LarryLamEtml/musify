@@ -10,7 +10,7 @@
     tools:layout_editor_absoluteX="0dp">
 
 
-    <!--Header-->
+    /*Header*/
 
     <SurfaceView
         android:id="@+id/HeaderSurface"
@@ -37,33 +37,41 @@
         android:id="@+id/input_search"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="28dp"
+        android:contentDescription="Rechercher..."
         android:ems="10"
-        android:hint="@string/research"
+        android:hint="Rechercher..."
         android:inputType="text"
         android:textColorHint="@color/colorProgression"
         android:backgroundTint="@color/colorBlue"
         android:textColorHighlight="@color/colorBlue"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <Button
         android:id="@+id/btnParameter"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginLeft="144dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="144dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/options"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintLeft_toRightOf="@+id/TextTitle"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btnSearch"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginEnd="45dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="45dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="95dp"
         android:background="@drawable/search"
@@ -81,7 +89,9 @@
         app:layout_editor_absoluteX="130dp"
         app:layout_editor_absoluteY="100dp"
         app:layout_constraintLeft_toRightOf="@+id/btnSearch"
+        android:layout_marginLeft="30dp"
         app:layout_constraintRight_toLeftOf="@+id/btnPlaylist"
+        android:layout_marginRight="30dp"
         app:layout_constraintTop_toTopOf="@+id/HeaderSurface"
         android:layout_marginTop="100dp"
         android:layout_marginStart="30dp"
@@ -92,6 +102,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginEnd="160dp"
+        android:layout_marginRight="160dp"
         android:layout_marginTop="97dp"
         android:background="@drawable/playlist"
         android:onClick="playlistClick"
@@ -107,7 +118,9 @@
         app:layout_editor_absoluteX="230dp"
         app:layout_editor_absoluteY="100dp"
         app:layout_constraintLeft_toRightOf="@+id/btnPlaylist"
+        android:layout_marginLeft="30dp"
         app:layout_constraintRight_toLeftOf="@+id/btnExplorer"
+        android:layout_marginRight="30dp"
         app:layout_constraintTop_toTopOf="@+id/HeaderSurface"
         android:layout_marginTop="100dp"
         app:layout_constraintHorizontal_bias="0.476"
@@ -119,6 +132,8 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginLeft="45dp"
+        android:layout_marginRight="20dp"
         android:layout_marginStart="45dp"
         android:layout_marginTop="95dp"
         android:background="@drawable/folder"
@@ -128,18 +143,35 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/HeaderSurface" />
 
-    <!--End Header-->
+    <EditText
+        android:id="@+id/TextTitle"
+        android:layout_width="140dp"
+        android:layout_height="70dp"
+        android:background="@drawable/musify"
+        android:ems="10"
+        android:inputType="none"
+        app:layout_editor_absoluteX="10dp"
+        app:layout_editor_absoluteY="10dp"
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp" />
 
+    /*End Header*/
 
-    <!--Content-->
-
+    /*Content*/
 
     <EditText
         android:id="@+id/actualTimeText"
-        android:hint="@+id/actualTimeText"
         android:layout_width="30dp"
         android:layout_height="19dp"
         android:layout_marginBottom="20dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:background="@color/colorPrimary"
         android:clickable="false"
@@ -148,13 +180,13 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:inputType="none"
-        android:text="@string/hourFirst"
+        android:text="1:32"
         android:textAlignment="viewEnd"
         android:textColor="@color/colorProgression"
         android:textIsSelectable="false"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/ContentSurface"
-        app:layout_constraintLeft_toRightOf="@+id/btnAddPlaylist"/>
+        app:layout_constraintLeft_toRightOf="@+id/btnAddPlaylist" />
 
     <ProgressBar
         android:id="@+id/progressBar2"
@@ -162,6 +194,7 @@
         android:layout_width="200dp"
         android:layout_height="16dp"
         android:layout_marginBottom="20dp"
+        android:layout_marginLeft="8dp"
         android:max="100"
         android:progress="40"
         android:progressBackgroundTint="@color/colorBackBar"
@@ -172,17 +205,17 @@
 
     <EditText
         android:id="@+id/fullTimeText"
-        android:hint="@+id/fullTimeText"
         android:layout_width="50dp"
         android:layout_height="20dp"
         android:background="@color/colorPrimary"
         android:ems="8"
         android:inputType="textPersonName"
-        android:text="@string/hourSecond"
+        android:text="3:20"
         android:textColor="@color/colorProgression"
         android:textIsSelectable="false"
         android:textSize="14sp"
         app:layout_constraintLeft_toRightOf="@+id/progressBar2"
+        android:layout_marginLeft="8dp"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@+id/ContentSurface"
         android:clickable="false"
@@ -196,6 +229,7 @@
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_marginBottom="21dp"
+        android:layout_marginLeft="40dp"
         android:layout_marginStart="20dp"
         android:background="@drawable/addplaylist"
         app:layout_constraintBottom_toTopOf="@+id/ContentSurface"
@@ -209,7 +243,7 @@
         android:layout_height="409dp"
         android:layout_marginTop="0dp"
         app:layout_constraintTop_toTopOf="@+id/ContentSurface"
-        android:layout_marginStart="1dp"
+        android:layout_marginLeft="1dp"
         app:layout_constraintLeft_toLeftOf="@+id/ContentSurface"
         tools:layout_editor_absoluteY="196dp">
 
@@ -221,7 +255,7 @@
         android:layout_height="406dp"
         android:layout_marginTop="0dp"
         app:layout_constraintTop_toTopOf="@+id/ContentSurface"
-        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
         app:layout_constraintLeft_toLeftOf="parent">
 
     </GridLayout>
@@ -232,21 +266,14 @@
         android:layout_height="406dp"
         android:layout_marginTop="-18dp"
         app:layout_constraintTop_toTopOf="@+id/ContentSurface"
-        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
         app:layout_constraintLeft_toLeftOf="parent">
 
     </GridLayout>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:contentDescription="@string/title"
-        android:layout_width="140dp"
-        android:layout_height="70dp"
-        app:srcCompat="@drawable/musify"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+    /*End Content*/
 
-    <!--End Content-->
+    /*Player*/
+
+    /*End Player*/
 </android.support.constraint.ConstraintLayout>
