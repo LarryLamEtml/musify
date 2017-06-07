@@ -1,20 +1,29 @@
 package musify.lamho.musify;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayout;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.R.attr.duration;
@@ -23,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewFlipper viewFlipper;
     private float lastX;
+    SearchActivity searchActivity;
+    PlaylistActivity playlistActivity;
+    MediaPlayer mediaPlayer;
+    Intent myIntent;
 
     EditText editText;
     ArrayList<String> listmp3;
@@ -34,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
+
+        mediaPlayer = new  MediaPlayer();
+        searchActivity = new SearchActivity();
+        playlistActivity = new PlaylistActivity();
+
+        listmp3=  playlistActivity.getListMusic(path);
+
+
         viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper);
         playlistClick(findViewById(R.id.btnPlaylist));
 
@@ -166,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
     //Recherche si des musiques contiennent le mot clé
     public void search(String word)
     {
+        searchActivity.search(word);
         TextView edit = (TextView) findViewById(R.id.contentText);
         edit.setText(word);
     }
@@ -219,33 +241,30 @@ public class MainActivity extends AppCompatActivity {
 
         //Efface le contenu de l'input
         ((EditText)input_search).setText("");
-        setContentView(R.layout.activity_fileexplorer);
+/*
+        View v = LayoutInflater.from(getApplication()).inflate(R.layout.activity_explorer, null);
+        LinearLayout linearLayout = (LinearLayout)v.findViewById(R.id.itemsLayout);*/
+
+        viewFlipper.setDisplayedChild(2);
+        }
+
+    public void openExplorer(View view)
+    {
+        myIntent = new Intent(MainActivity.this, ListFileActivity.class);
+        startActivityForResult(myIntent, 1);
 
     }
-
-    //Récupère une liste de toutes les music
-    private ArrayList<String> getListMusic(String YourFolderPath)
+    public void playMusic(String filePath)
     {
-        ArrayList<String> listMusic = new ArrayList<>();
-        String[] extensions = { "mp3" };
 
-        File file = new File(YourFolderPath);
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (files != null && files.length > 0) {
-                for (File f : files) {
-                    if (f.isDirectory()) {
-                        getListMusic(f.getAbsolutePath());
-                    } else {
-                        for (int i = 0; i < extensions.length; i++) {
-                            if (f.getAbsolutePath().endsWith(extensions[i])) {
-                                listMusic.add(f.getAbsolutePath());
-                            }
-                        }
-                    }
-                }
-            }
+        try{
+            mediaPlayer.stop();
+            mediaPlayer.setDataSource(filePath);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+      } catch (IOException e) {
+            mediaPlayer.stop();
+            Toast.makeText(this, "Fichier illisible", Toast.LENGTH_LONG).show();
         }
-        return listMusic;
     }
 }
