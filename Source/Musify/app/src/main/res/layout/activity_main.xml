@@ -14,18 +14,18 @@
 
     <SurfaceView
         android:id="@+id/HeaderSurface"
-        android:layout_width="414dp"
-        android:layout_height="199dp"
+        android:layout_width="0dp"
+        android:layout_height="220dp"
         android:background="@color/colorPrimary"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.666" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <SurfaceView
         android:id="@+id/ContentSurface"
-        android:layout_width="423dp"
-        android:layout_height="442dp"
+        android:layout_width="match_parent"
+        android:layout_height="325dp"
         android:background="@color/colorWhite"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -36,8 +36,6 @@
         android:id="@+id/viewFlipper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp"
-        android:layout_marginTop="0dp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -51,9 +49,10 @@
             <ListView
                 android:layout_width="290dp"
                 android:layout_height="match_parent"
-                android:layout_centerInParent="true"
                 app:layout_constraintRight_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
 
             <TextView
                 android:id="@+id/contentText"
@@ -87,25 +86,15 @@
                 android:id="@+id/btnExplore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Parcourir..."
-                android:onClick="openExplorer"/>
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="40dp"
-                android:text="Exploreur"
-                app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:onClick="openExplorer"
+                android:text="Parcourir..." />
 
             <ListView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
         </RelativeLayout>
     </ViewFlipper>
 
@@ -139,14 +128,79 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginEnd="45dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="45dp"
         android:layout_marginTop="95dp"
         android:background="@drawable/search"
         android:onClick="searchClick"
-        app:layout_constraintHorizontal_bias="0.515"
+        app:layout_constraintHorizontal_bias="0.459"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/btnPlaylist"
-        app:layout_constraintTop_toTopOf="@+id/HeaderSurface" />
+        app:layout_constraintTop_toTopOf="@+id/HeaderSurface"/>
+
+    <Button
+        android:id="@+id/btnPrevious"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="41dp"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/previous"
+        android:onClick="searchClick"
+        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        app:layout_constraintLeft_toRightOf="@+id/btnReplay" />
+
+    <Button
+        android:id="@+id/btnReplay"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="44dp"
+        android:layout_marginLeft="34dp"
+        android:background="@drawable/replay"
+        android:onClick="replayClick"
+        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <Button
+        android:id="@+id/btnUp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="85dp"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/arrow"
+        android:onClick="replayClick"
+        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <Button
+        android:id="@+id/btnShuffle"
+        android:layout_width="35dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="44dp"
+        android:layout_marginLeft="22dp"
+        android:background="@drawable/random"
+        android:onClick="searchClick"
+        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        app:layout_constraintLeft_toRightOf="@+id/btnNext" />
+
+    <Button
+        android:id="@+id/btnPlay"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="31dp"
+        android:layout_marginLeft="25dp"
+        android:background="@drawable/play"
+        android:onClick="playClick"
+        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        app:layout_constraintLeft_toRightOf="@+id/btnPrevious" />
+
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="41dp"
+        android:layout_marginLeft="26dp"
+        android:background="@drawable/next"
+        android:onClick="searchClick"
+        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        app:layout_constraintLeft_toRightOf="@+id/btnPlay" />
 
     <View
         android:id="@+id/separator1"
@@ -166,13 +220,12 @@
         android:id="@+id/btnPlaylist"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginEnd="160dp"
         android:layout_marginTop="95dp"
+        android:layout_marginStart="65dp"
         android:background="@drawable/playlist"
         android:onClick="playlistClick"
-        app:layout_constraintLeft_toLeftOf="@+id/separator1"
-        app:layout_constraintRight_toRightOf="@+id/HeaderSurface"
-        app:layout_constraintTop_toTopOf="@+id/HeaderSurface" />
+        app:layout_constraintTop_toTopOf="@+id/HeaderSurface"
+        app:layout_constraintLeft_toRightOf="@+id/btnSearch"/>
 
     <View
         android:id="@+id/separator"
@@ -194,14 +247,12 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginStart="45dp"
+        android:layout_marginStart="65dp"
         android:layout_marginTop="95dp"
         android:background="@drawable/folder"
         android:onClick="explorerClick"
-        app:layout_constraintHorizontal_bias="0.568"
-        app:layout_constraintLeft_toRightOf="@+id/btnPlaylist"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/HeaderSurface" />
+        app:layout_constraintTop_toTopOf="@+id/HeaderSurface"
+        app:layout_constraintLeft_toRightOf="@+id/btnPlaylist"/>
 
     <!--End Header-->
 
@@ -214,7 +265,6 @@
         android:hint="@+id/actualTimeText"
         android:layout_width="30dp"
         android:layout_height="19dp"
-        android:layout_marginBottom="20dp"
         android:layout_marginStart="8dp"
         android:background="@color/colorPrimary"
         android:clickable="false"
@@ -228,55 +278,50 @@
         android:textColor="@color/colorProgression"
         android:textIsSelectable="false"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/ContentSurface"
-        app:layout_constraintLeft_toRightOf="@+id/btnAddPlaylist"/>
-
-    <ProgressBar
-        android:id="@+id/progressBar2"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="200dp"
-        android:layout_height="16dp"
-        android:layout_marginBottom="20dp"
-        android:max="100"
-        android:progress="40"
-        android:progressBackgroundTint="@color/colorBackBar"
-        android:progressTint="@color/colorProgression"
-        app:layout_constraintBottom_toTopOf="@+id/ContentSurface"
-        app:layout_constraintLeft_toRightOf="@+id/actualTimeText"
-        android:layout_marginStart="8dp" />
+        app:layout_constraintLeft_toRightOf="@+id/btnAddPlaylist"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/musicTitle" />
 
     <EditText
         android:id="@+id/fullTimeText"
-        android:hint="@+id/fullTimeText"
         android:layout_width="50dp"
         android:layout_height="20dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:background="@color/colorPrimary"
+        android:clickable="false"
+        android:cursorVisible="false"
         android:ems="8"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:hint="@+id/fullTimeText"
         android:inputType="textPersonName"
+        android:padding="0dp"
+        android:paddingBottom="0dp"
+        android:paddingEnd="0dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:paddingStart="0dp"
+        android:paddingTop="0dp"
         android:text="@string/hourSecond"
         android:textColor="@color/colorProgression"
         android:textIsSelectable="false"
         android:textSize="14sp"
-        app:layout_constraintLeft_toRightOf="@+id/progressBar2"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/ContentSurface"
-        android:clickable="false"
-        android:cursorVisible="false"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:layout_marginStart="8dp" />
+        app:layout_constraintLeft_toRightOf="@+id/musicBar"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/musicTitle" />
 
     <Button
         android:id="@+id/btnAddPlaylist"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginBottom="18dp"
-        android:layout_marginStart="50dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="25dp"
         android:background="@drawable/addplaylist"
-        app:layout_constraintBottom_toTopOf="@+id/ContentSurface"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_editor_absoluteX="45dp"
-        app:layout_editor_absoluteY="153dp" />
+        android:layout_marginLeft="25dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/musicTitle" />
 
     <ImageView
         android:id="@+id/Title"
@@ -288,6 +333,57 @@
         android:layout_marginTop="8dp"
         android:layout_marginStart="20dp"
         app:layout_constraintLeft_toLeftOf="parent" />
+
+    <SurfaceView
+        android:id="@+id/surfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginBottom="-2dp"
+        android:background="@color/colorPlayer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <SeekBar
+        android:id="@+id/musicBar"
+        android:layout_width="200dp"
+        android:layout_height="22dp"
+        android:foregroundTint="@color/colorProgression"
+        android:max="100"
+        android:progress="0"
+        app:layout_constraintLeft_toRightOf="@+id/actualTimeText"
+        android:progressTint="@color/colorProgression"
+        android:thumbTint="@color/colorProgression"
+        android:layout_marginLeft="0dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/musicTitle" />
+
+    <SeekBar
+        android:id="@+id/volumeBar"
+        android:layout_width="320dp"
+        android:layout_height="22dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="20dp"
+        android:foregroundTint="@color/colorProgression"
+        android:max="100"
+        android:progress="0"
+        android:progressTint="@color/colorBlue"
+        android:thumbTint="@color/colorBlue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <TextView
+        android:id="@+id/musicTitle"
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="7dp"
+        android:layout_marginLeft="30dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/viewFlipper"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:gravity="center"
+        />
 
     <!--End Content-->
 </android.support.constraint.ConstraintLayout>

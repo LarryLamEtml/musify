@@ -7,8 +7,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ import java.util.List;
 public class ListFileActivity extends ListActivity {
 
     private String path;
+    private String MusicPath;
     private String extensions[] = {"mp3"};
     MainActivity main;
 
@@ -33,7 +36,6 @@ public class ListFileActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        main = new MainActivity();
         //check for permission
         if(ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
             //ask for permission
@@ -42,10 +44,27 @@ public class ListFileActivity extends ListActivity {
         // Use the current directory as title
         //path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
         path = Environment.getExternalStorageDirectory().getPath();
+        WindowManager.LayoutParams params = getWindow().getAttributes();
 
         if (getIntent().hasExtra("path")) {
             path = getIntent().getStringExtra("path");
         }
+
+        /* Set activity size
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        int height = (new MainActivity().findViewById(R.id.HeaderSurface).getHeight()) - displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+
+        params.x = 200;
+        params.height = height;
+        params.width = width;
+        params.y = 0;
+
+        this.getWindow().setAttributes(params);*/
+
+
         setTitle(path);
 
         // Read all files sorted into the values-array
@@ -58,7 +77,6 @@ public class ListFileActivity extends ListActivity {
 
         if (files != null) {
             for (File file : files) {
-
                 if (!file.getName().startsWith(".")) {
                     for (String extension:extensions) {
                         if(file.getName().endsWith(extension)||file.isDirectory())
@@ -76,6 +94,14 @@ public class ListFileActivity extends ListActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_2, android.R.id.text1, values);
         setListAdapter(adapter);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == MainActivity.REQUEST_MUSIC_PATH) {
+
+        }
     }
 
     @Override
@@ -97,13 +123,24 @@ public class ListFileActivity extends ListActivity {
             for (String extension:extensions) {
                 if(extension_.endsWith(extension))
                 {
-                    main.playMusic(new File(filename).getPath());
-                    super.onBackPressed();
+                    MusicPath = new File(filename).getPath();
+                    MusicPlayer.getInstance().playMusic(MusicPath);
+
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("isMusicPlaying", "true");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    //MainActivity.playMusic(MusicPath);
 
                     return;
                 }
             }
             Toast.makeText(this, fileName[0] + " ne peut être joué", Toast.LENGTH_LONG).show();
         }
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        intent.getStringExtra("isMusicPlaying");
     }
 }

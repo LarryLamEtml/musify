@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Musify</string>
-    <string name="hourFirst">1:32</string>
-    <string name="hourSecond">3:20</string>
+    <string name="hourFirst">0:00</string>
+    <string name="hourSecond">0:00</string>
     <string name="research">Rechercher</string>
     <string name="title">TitleDescription</string>
 </resources>

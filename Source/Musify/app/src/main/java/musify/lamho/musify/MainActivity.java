@@ -1,45 +1,52 @@
 package musify.lamho.musify;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayout;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-
-import static android.R.attr.duration;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Handler mHandler = new Handler();
     private ViewFlipper viewFlipper;
     private float lastX;
     SearchActivity searchActivity;
     PlaylistActivity playlistActivity;
-    MediaPlayer mediaPlayer;
-    Intent myIntent;
+    public static Intent myIntent;
 
     EditText editText;
     ArrayList<String> listmp3;
     String path = "Phone\\musify\\Music";
+    static int REQUEST_MUSIC_PATH = 1;
+    String music_path ="";
+
+    //Variables pour savoir si le bouton est cliqué
+    boolean isReplayPressed = false;
+    boolean isShufflePressed = false;
+    boolean isPlayPressed = false;
+
+    MusicPlayer musicPlayer;
+
+
+    int musicTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,17 +54,100 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-
-        mediaPlayer = new  MediaPlayer();
         searchActivity = new SearchActivity();
         playlistActivity = new PlaylistActivity();
 
-        listmp3=  playlistActivity.getListMusic(path);
-
 
         viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper);
+        listmp3=  playlistActivity.getListMusic(path);
+
+        musicPlayer = MusicPlayer.getInstance();
+        //Barre du temps de la musique
+
+        final SeekBar musicBar=(SeekBar) findViewById(R.id.musicBar);
+
+        musicBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if(isPlayPressed)
+                {
+                    musicPlayer.startMusicAtTime(musicBar.getProgress());
+                }else
+                {
+                    musicPlayer.setMusicTime(musicBar.getProgress());
+                }
+            }
+        });
+
         playlistClick(findViewById(R.id.btnPlaylist));
 
+        if (getIntent().hasExtra("isMusicPlaying")) {
+            String a = getIntent().getExtras().getString("isMusicPlaying");
+            if(a.equals("true"))
+            {
+                musicBar.setMax(MusicPlayer.getMusicDuration());
+                findViewById(R.id.btnPlay).setBackgroundResource(R.drawable.pause);//affiche l'icone play
+                TextView title = (TextView)findViewById(R.id.musicTitle);//affiche l'icone play
+                title.setText(MusicPlayer.getMusicName());
+                isPlayPressed=true;
+            }else
+            {
+                findViewById(R.id.btnPlay).setBackgroundResource(R.drawable.play);//affiche l'icone play
+                isPlayPressed=false;
+            }
+        }
+
+//Make sure you update Seekbar on UI thread
+        MainActivity.this.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                if(musicPlayer.getMusicSource() != ""){
+                    String separator=":";
+                    int mCurrentPosition = musicPlayer.mediaPlayer.getCurrentPosition();
+                    int duration = mCurrentPosition;
+
+                    musicBar.setProgress(mCurrentPosition);
+                    long minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
+                    duration -= TimeUnit.MINUTES.toMillis(minutes);
+                    long seconds = TimeUnit.MILLISECONDS.toSeconds(duration);
+                    EditText actualTime = (EditText)findViewById(R.id.actualTimeText);
+                    EditText fullTime = (EditText)findViewById(R.id.fullTimeText);
+                    if(seconds<10)
+                    {
+                        separator=":0";
+                    }
+                    actualTime.setText(minutes+separator+seconds);
+
+                    duration = musicPlayer.mediaPlayer.getDuration();
+
+                    minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
+                    duration -= TimeUnit.MINUTES.toMillis(minutes);
+                    seconds = TimeUnit.MILLISECONDS.toSeconds(duration);
+
+                    if(seconds<10)
+                    {
+                        separator=":0";
+                    }else
+                    {
+                        separator=":";
+                    }
+                    fullTime.setText(minutes+separator+seconds);
+
+                }
+                mHandler.postDelayed(this, 250);
+            }
+        });
+        initialiseSeekBar();
 /*
         //Récupère et affiche la liste des musiques
 
@@ -71,7 +161,66 @@ public class MainActivity extends AppCompatActivity {
         }
 
         */
+
     }
+
+    private SeekBar volumeSeekbar;
+    private AudioManager audioManager;
+    /**
+     * To initialize the seek bar
+     */
+    private void initialiseSeekBar() {
+
+        volumeSeekbar = (SeekBar)findViewById(R.id.volumeBar);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        volumeSeekbar.setMax(audioManager
+                .getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        volumeSeekbar.setProgress(audioManager
+                .getStreamVolume(AudioManager.STREAM_MUSIC));
+
+
+        volumeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
+            @Override
+            public void onStopTrackingTouch(SeekBar arg0)
+            {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar arg0)
+            {
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar arg0, int progress, boolean arg2)
+            {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
+                        progress, 0);
+            }
+        });
+    }
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP)
+        {
+
+            int index = volumeSeekbar.getProgress();
+            volumeSeekbar.setProgress(index + 1);
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
+        {
+            int index = volumeSeekbar.getProgress();
+            volumeSeekbar.setProgress(index - 1);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    public void getScreenSize()
+    {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+    }
+/*
         public boolean onTouchEvent(MotionEvent touchevent) {
             switch (touchevent.getAction()) {
 
@@ -116,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         }
-
+*/
 
     public void searchClick(View view)
     {
@@ -251,20 +400,46 @@ public class MainActivity extends AppCompatActivity {
     public void openExplorer(View view)
     {
         myIntent = new Intent(MainActivity.this, ListFileActivity.class);
-        startActivityForResult(myIntent, 1);
+        startActivityForResult(myIntent, REQUEST_MUSIC_PATH);
+    }
+
+    /*Media player button handling*/
+
+    public void replayClick(View view)
+    {
+        if(isReplayPressed)//Si le bouton est déjà cliqué
+        {
+            view.setBackgroundResource(R.drawable.replay);//met en noir
+            musicPlayer.mediaPlayer.setLooping(false);
+            isReplayPressed=false;
+
+        }else
+        {
+            view.setBackgroundResource(R.drawable.replayblue);//met en blue (Selectionné)
+            musicPlayer.mediaPlayer.setLooping(true);
+            isReplayPressed=true;
+
+        }
 
     }
-    public void playMusic(String filePath)
+    public void playClick(View view)
     {
 
-        try{
-            mediaPlayer.stop();
-            mediaPlayer.setDataSource(filePath);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-      } catch (IOException e) {
-            mediaPlayer.stop();
-            Toast.makeText(this, "Fichier illisible", Toast.LENGTH_LONG).show();
+        if(isPlayPressed)//Si le bouton est déjà cliqué
+        {
+            view.setBackgroundResource(R.drawable.play);//met en noir
+            musicPlayer.pauseMusic();
+            isPlayPressed=false;
+
+        }else
+        {
+            if(musicPlayer.getMusicSource() != "") {
+                view.setBackgroundResource(R.drawable.pause);//affiche l'icone play
+                musicPlayer.resumeMusic();
+                isPlayPressed = true;
+            }
         }
+
     }
+
 }
