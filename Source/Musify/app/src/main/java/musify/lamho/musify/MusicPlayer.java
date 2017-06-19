@@ -59,7 +59,8 @@ public class MusicPlayer {
         if(musicSource!="")
         {
             String[] s =musicSource.split("/");
-            name = s[s.length-1];
+            String[] st = s[s.length-1].split("\\.");
+            name = st[0];
         }
 
         return name;

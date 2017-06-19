@@ -1,12 +1,17 @@
 package musify.lamho.musify;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -15,15 +20,24 @@ import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
+
+    final String MUSIFY_PATH = Environment.getExternalStorageDirectory() +
+            File.separator + "musify";
+    final String MUSIC_PATH = MUSIFY_PATH +
+            File.separator + "music";
 
     private Handler mHandler = new Handler();
     private ViewFlipper viewFlipper;
@@ -34,17 +48,15 @@ public class MainActivity extends AppCompatActivity {
 
     EditText editText;
     ArrayList<String> listmp3;
-    String path = "Phone\\musify\\Music";
     static int REQUEST_MUSIC_PATH = 1;
-    String music_path ="";
 
+    int musicPosition = 0;
     //Variables pour savoir si le bouton est cliqué
     boolean isReplayPressed = false;
     boolean isShufflePressed = false;
     boolean isPlayPressed = false;
 
     MusicPlayer musicPlayer;
-
 
     int musicTime = 0;
 
@@ -54,64 +66,103 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
+        createAppFolder();
+
         searchActivity = new SearchActivity();
         playlistActivity = new PlaylistActivity();
 
-
         viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper);
-        listmp3=  playlistActivity.getListMusic(path);
 
         musicPlayer = MusicPlayer.getInstance();
-        //Barre du temps de la musique
 
-        final SeekBar musicBar=(SeekBar) findViewById(R.id.musicBar);
-
-        musicBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if(isPlayPressed)
-                {
-                    musicPlayer.startMusicAtTime(musicBar.getProgress());
-                }else
-                {
-                    musicPlayer.setMusicTime(musicBar.getProgress());
-                }
-            }
-        });
 
         playlistClick(findViewById(R.id.btnPlaylist));
 
         if (getIntent().hasExtra("isMusicPlaying")) {
             String a = getIntent().getExtras().getString("isMusicPlaying");
-            if(a.equals("true"))
-            {
-                musicBar.setMax(MusicPlayer.getMusicDuration());
-                findViewById(R.id.btnPlay).setBackgroundResource(R.drawable.pause);//affiche l'icone play
-                TextView title = (TextView)findViewById(R.id.musicTitle);//affiche l'icone play
-                title.setText(MusicPlayer.getMusicName());
-                isPlayPressed=true;
-            }else
-            {
-                findViewById(R.id.btnPlay).setBackgroundResource(R.drawable.play);//affiche l'icone play
-                isPlayPressed=false;
+            if (a.equals("true")) {
+                musicPosition=-1;
+                setMusicMode(true);
+            } else {
+                setMusicMode(false);
             }
         }
 
-//Make sure you update Seekbar on UI thread
+
+        initialiseSeekBar();
+        updateSeekbar();
+        setButtonOnTouchListener();
+        displayAllMusic();
+
+    }
+
+public void setMusicMode(boolean isTrue)
+{
+    final SeekBar musicBar = (SeekBar) findViewById(R.id.musicBar);
+
+    if(isTrue)
+    {
+        musicBar.setMax(MusicPlayer.getMusicDuration());
+        findViewById(R.id.btnPlay).setBackgroundResource(R.drawable.pause);//affiche l'icone play
+        TextView title = (TextView) findViewById(R.id.musicTitle);//affiche l'icone play
+        title.setText(MusicPlayer.getMusicName());
+        isPlayPressed = true;
+    }else
+    {
+        findViewById(R.id.btnPlay).setBackgroundResource(R.drawable.play);//affiche l'icone play
+        isPlayPressed = false;
+    }
+
+}
+public void setButtonOnTouchListener() {
+}
+
+public void displayAllMusic()
+{
+        //Récupère et affiche la liste des musiques
+    ArrayAdapter<String> _arrayAdapter;
+
+    listmp3 = playlistActivity.getListMusic(MUSIC_PATH);
+
+    ArrayList<String> listMusicNames = new ArrayList<String>();
+
+    ListView listview = (ListView)findViewById(R.id.listMusic);
+
+    for(String music:listmp3)
+    {
+        String[] s = music.split("/");
+        String[] st = s[s.length-1].split("\\.");
+
+        listMusicNames.add(st[0]);
+    }
+    // Set Array-Adapter
+    _arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listMusicNames);
+    listview.setAdapter(_arrayAdapter);
+    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
+
+            musicPosition = position;
+            musicPlayer.playMusic(listmp3.get(position));
+            setMusicMode(true);
+        }
+    });
+
+    /* ajout d'items
+    listmp3.add("your string");
+    _arrayAdapter.notifyDataSetChanged();*/
+
+}
+
+    private void updateSeekbar()
+    {
+
+        final SeekBar musicBar=(SeekBar) findViewById(R.id.musicBar);
         MainActivity.this.runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
-                if(musicPlayer.getMusicSource() != ""){
+                if(!musicPlayer.getMusicSource().equals("")){
                     String separator=":";
                     int mCurrentPosition = musicPlayer.mediaPlayer.getCurrentPosition();
                     int duration = mCurrentPosition;
@@ -147,21 +198,26 @@ public class MainActivity extends AppCompatActivity {
                 mHandler.postDelayed(this, 250);
             }
         });
-        initialiseSeekBar();
-/*
-        //Récupère et affiche la liste des musiques
+    }
 
-        GridLayout layout =  (GridLayout)findViewById(R.id.content_search);
-        listmp3 = new ArrayList<String>();
-        listmp3 = getListMusic(path);
-        for (String music:listmp3) {
-            TextView textView = new TextView(this);
-            textView.setText(music);
-            layout.addView(textView);
+
+    private void createAppFolder()
+    {
+        File folder = new File(MUSIFY_PATH);
+        boolean success = true;
+        if (!folder.exists()) {
+            success = folder.mkdirs();
         }
-
-        */
-
+        if (success) {
+            File musicFolder = new File(MUSIC_PATH);
+            musicFolder.mkdirs();
+        } else {
+            //check for permission
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+                //ask for permission
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            }
+        }
     }
 
     private SeekBar volumeSeekbar;
@@ -170,6 +226,32 @@ public class MainActivity extends AppCompatActivity {
      * To initialize the seek bar
      */
     private void initialiseSeekBar() {
+
+        final SeekBar musicBar=(SeekBar) findViewById(R.id.musicBar);
+        //music bar
+        musicBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if(isPlayPressed)
+                {
+                    musicPlayer.startMusicAtTime(musicBar.getProgress());
+                }else
+                {
+                    musicPlayer.setMusicTime(musicBar.getProgress());
+                }
+            }
+        });
+
+        //Volume bar
 
         volumeSeekbar = (SeekBar)findViewById(R.id.volumeBar);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -404,7 +486,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*Media player button handling*/
+    public void shuffleClick(View view)
+    {
 
+    }
     public void replayClick(View view)
     {
         if(isReplayPressed)//Si le bouton est déjà cliqué
@@ -422,6 +507,47 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    public void nextClick(View view)
+    {
+
+        if(musicPosition<listmp3.size()-1&&musicPosition!=-1)
+        {
+            musicPosition++;
+            musicPlayer.playMusic(listmp3.get(musicPosition));
+            setMusicMode(true);
+        }
+
+
+    }
+    public void previousClick(View view)
+    {
+        if(musicPosition>0)
+        {
+            //joue lA MUSIQUE PRéCédante
+            musicPosition--;
+            musicPlayer.playMusic(listmp3.get(musicPosition));
+        }else
+        {
+            //Recommence la musique
+            musicPlayer.startMusicAtTime(0);
+        }
+        setMusicMode(true);
+    }
+    public void maximiseClick(View view)
+    {
+        if(isShufflePressed)//Si le bouton est déjà cliqué
+        {
+            view.setBackgroundResource(R.drawable.random);//met en noir
+            isShufflePressed=false;
+
+        }else
+        {
+            view.setBackgroundResource(R.drawable.randomblue);//met en blue (Selectionné)
+            isShufflePressed=true;
+
+        }
+    }
+
     public void playClick(View view)
     {
 
@@ -433,7 +559,7 @@ public class MainActivity extends AppCompatActivity {
 
         }else
         {
-            if(musicPlayer.getMusicSource() != "") {
+            if(!musicPlayer.getMusicSource().equals("")) {
                 view.setBackgroundResource(R.drawable.pause);//affiche l'icone play
                 musicPlayer.resumeMusic();
                 isPlayPressed = true;
@@ -441,5 +567,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+
 
 }

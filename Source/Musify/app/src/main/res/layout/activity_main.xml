@@ -25,7 +25,7 @@
     <SurfaceView
         android:id="@+id/ContentSurface"
         android:layout_width="match_parent"
-        android:layout_height="325dp"
+        android:layout_height="275dp"
         android:background="@color/colorWhite"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -35,8 +35,8 @@
     <ViewFlipper
         android:id="@+id/viewFlipper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_height="275dp"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/ContentSurface">
@@ -49,10 +49,10 @@
             <ListView
                 android:layout_width="290dp"
                 android:layout_height="match_parent"
-                app:layout_constraintRight_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                app:layout_constraintRight_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/contentText"
@@ -84,17 +84,19 @@
 
             <Button
                 android:id="@+id/btnExplore"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="openExplorer"
                 android:text="Parcourir..." />
 
             <ListView
-                android:id="@+id/list"
+                android:id="@+id/listMusic"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/btnExplore"
                 app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/btnExplore" />
         </RelativeLayout>
     </ViewFlipper>
 
@@ -143,8 +145,8 @@
         android:layout_marginBottom="41dp"
         android:layout_marginLeft="20dp"
         android:background="@drawable/previous"
-        android:onClick="searchClick"
-        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        android:onClick="previousClick"
+        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
         app:layout_constraintLeft_toRightOf="@+id/btnReplay" />
 
     <Button
@@ -155,7 +157,7 @@
         android:layout_marginLeft="34dp"
         android:background="@drawable/replay"
         android:onClick="replayClick"
-        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
@@ -165,8 +167,8 @@
         android:layout_marginBottom="85dp"
         android:layout_marginLeft="20dp"
         android:background="@drawable/arrow"
-        android:onClick="replayClick"
-        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        android:onClick="maximiseClick"
+        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
@@ -176,8 +178,8 @@
         android:layout_marginBottom="44dp"
         android:layout_marginLeft="22dp"
         android:background="@drawable/random"
-        android:onClick="searchClick"
-        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        android:onClick="shuffleClick"
+        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
         app:layout_constraintLeft_toRightOf="@+id/btnNext" />
 
     <Button
@@ -188,7 +190,7 @@
         android:layout_marginLeft="25dp"
         android:background="@drawable/play"
         android:onClick="playClick"
-        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
         app:layout_constraintLeft_toRightOf="@+id/btnPrevious" />
 
     <Button
@@ -198,8 +200,8 @@
         android:layout_marginBottom="41dp"
         android:layout_marginLeft="26dp"
         android:background="@drawable/next"
-        android:onClick="searchClick"
-        app:layout_constraintBottom_toBottomOf="@+id/surfaceView"
+        android:onClick="nextClick"
+        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
         app:layout_constraintLeft_toRightOf="@+id/btnPlay" />
 
     <View
@@ -335,7 +337,7 @@
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <SurfaceView
-        android:id="@+id/surfaceView"
+        android:id="@+id/playerSurface"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_marginBottom="-2dp"
@@ -379,11 +381,9 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="7dp"
         android:layout_marginLeft="30dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/viewFlipper"
-        app:layout_constraintLeft_toLeftOf="parent"
         android:gravity="center"
-        />
+        app:layout_constraintBottom_toTopOf="@+id/viewFlipper"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <!--End Content-->
 </android.support.constraint.ConstraintLayout>
