@@ -30,6 +30,7 @@ public class ListFileActivity extends ListActivity {
     private String path;
     private String MusicPath;
     private String extensions[] = {"mp3"};
+    final String EMPTY_TEXT = "Il n'y a aucun fichier...";
     MainActivity main;
 
     @Override
@@ -89,7 +90,10 @@ public class ListFileActivity extends ListActivity {
             }
         }
         Collections.sort(values);
-
+        if(values.size()==0)
+        {
+            values.add(EMPTY_TEXT);
+        }
         // Put the data into the list
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_2, android.R.id.text1, values);
@@ -133,11 +137,14 @@ public class ListFileActivity extends ListActivity {
                     //MainActivity.playMusic(MusicPath);
 
                     return;
+                }else if(!filenameArray[filenameArray.length-1].equals(EMPTY_TEXT))//Si  le contenu n'est pas le message d'avertissement
+                {
+                    Toast.makeText(this, fileName[0] + " ne peut être joué", Toast.LENGTH_LONG).show();//Avertir l'utilisateur
                 }
             }
-            Toast.makeText(this, fileName[0] + " ne peut être joué", Toast.LENGTH_LONG).show();
         }
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);

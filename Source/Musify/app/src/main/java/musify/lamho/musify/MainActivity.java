@@ -1,5 +1,6 @@
 package musify.lamho.musify;
 import android.Manifest;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,21 +17,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,6 +73,13 @@ public class MainActivity extends AppCompatActivity {
 
     int musicTime = 0;
 
+    boolean isMaximised = false;
+    ArrayAdapter<String> _arrayAdapter;
+
+    List<Integer> lastTab;//list pour stocker le tab d'avant
+    boolean isAlreadyBack=false;
+
+    ListView listview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
@@ -76,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         musicPlayer = MusicPlayer.getInstance();
 
 
-        playlistClick(findViewById(R.id.btnPlaylist));
+
 
         if (getIntent().hasExtra("isMusicPlaying")) {
             String a = getIntent().getExtras().getString("isMusicPlaying");
@@ -94,8 +114,50 @@ public class MainActivity extends AppCompatActivity {
         setButtonOnTouchListener();
         displayAllMusic();
 
-    }
+        lastTab = new ArrayList<Integer>();
+        lastTab.add(-1);
+        playlistClick(findViewById(R.id.btnPlaylist));
+        //par défaut page sur la musique
+       // maximiseClick(findViewById(R.id.btnMaximise));
 
+    }
+    @Override
+    public void onBackPressed()
+    {
+
+        if(isAlreadyBack)
+        {
+            super.onBackPressed();
+        }else {
+
+
+            switch (lastTab.get(lastTab.size() - 2)) {
+                case 0:
+                    searchClick(findViewById(R.id.btnSearch));
+                    isAlreadyBack = true;
+                    break;
+                case 1:
+                    playlistClick(findViewById(R.id.btnPlaylist));
+                    isAlreadyBack = true;
+                    break;
+                case 2:
+                    explorerClick(findViewById(R.id.btnExplorer));
+                    isAlreadyBack = true;
+                    break;
+                case 3:
+                    maximiseClick(findViewById(R.id.btnMaximise));
+                    isAlreadyBack = true;
+                    break;
+                case -1:
+                    super.onBackPressed();
+                    break;
+                default:
+                    super.onBackPressed();
+                    break;
+            }
+        }
+
+    }
 public void setMusicMode(boolean isTrue)
 {
     final SeekBar musicBar = (SeekBar) findViewById(R.id.musicBar);
@@ -120,13 +182,14 @@ public void setButtonOnTouchListener() {
 public void displayAllMusic()
 {
         //Récupère et affiche la liste des musiques
-    ArrayAdapter<String> _arrayAdapter;
+
 
     listmp3 = playlistActivity.getListMusic(MUSIC_PATH);
 
     ArrayList<String> listMusicNames = new ArrayList<String>();
 
-    ListView listview = (ListView)findViewById(R.id.listMusic);
+    listview = (ListView)findViewById(R.id.listMusic);
+    listview.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
     for(String music:listmp3)
     {
@@ -137,7 +200,11 @@ public void displayAllMusic()
     }
     // Set Array-Adapter
     _arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listMusicNames);
+    listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
     listview.setAdapter(_arrayAdapter);
+
+
     listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
@@ -147,12 +214,19 @@ public void displayAllMusic()
             setMusicMode(true);
         }
     });
-
-    /* ajout d'items
-    listmp3.add("your string");
-    _arrayAdapter.notifyDataSetChanged();*/
-
 }
+    /* ajout d'items
+    listmp3.add("your string");;
+private void changeBackgroundColor(int index)
+    {
+
+        for (int i = 0; i < listview.getChildCount(); i++) {
+            //listview.getChildAt(i).setBackgroundColor(Color.WHITE);
+            listItems.get(i).setBackgroundColor(Color.TRANSPARENT);
+        }
+        listItems.get(index).setBackgroundColor(getResources().getColor(R.color.colorBlue,null));
+    }*/
+
 
     private void updateSeekbar()
     {
@@ -366,8 +440,12 @@ public void displayAllMusic()
         playlist.setBackgroundResource(R.drawable.playlist);
         explorer.setBackgroundResource(R.drawable.folder);
 
-        viewFlipper.setDisplayedChild(0);
+        minimiseClick(view);
+
+        viewFlipper.setDisplayedChild(1);
         InputListener();
+        lastTab.add(0);
+        isAlreadyBack=false;
 
     }
     //Recherche les musique apres l'envoi et cache le clavier lors du changement de focus
@@ -442,11 +520,14 @@ public void displayAllMusic()
         input_search.setVisibility(View.GONE);
         settings.setVisibility(View.VISIBLE);
 
-
+        minimiseClick(view);
 
         //Efface le contenu de l'input
         ((EditText)input_search).setText("");
-        viewFlipper.setDisplayedChild(1);
+        lastTab.add(1);
+
+        viewFlipper.setDisplayedChild(2);
+        isAlreadyBack=false;
 
     }
 
@@ -469,15 +550,19 @@ public void displayAllMusic()
         input_search.setVisibility(View.GONE);
         settings.setVisibility(View.VISIBLE);
 
+        minimiseClick(view);
 
         //Efface le contenu de l'input
         ((EditText)input_search).setText("");
 /*
         View v = LayoutInflater.from(getApplication()).inflate(R.layout.activity_explorer, null);
         LinearLayout linearLayout = (LinearLayout)v.findViewById(R.id.itemsLayout);*/
+        lastTab.add(2);
 
-        viewFlipper.setDisplayedChild(2);
-        }
+        viewFlipper.setDisplayedChild(3);
+        isAlreadyBack=false;
+
+    }
 
     public void openExplorer(View view)
     {
@@ -488,7 +573,17 @@ public void displayAllMusic()
     /*Media player button handling*/
     public void shuffleClick(View view)
     {
+        if(isShufflePressed)//Si le bouton est déjà cliqué
+        {
+            view.setBackgroundResource(R.drawable.random);//met en noir
+            isShufflePressed=false;
 
+        }else
+        {
+            view.setBackgroundResource(R.drawable.randomblue);//met en blue (Selectionné)
+            isShufflePressed=true;
+
+        }
     }
     public void replayClick(View view)
     {
@@ -513,8 +608,11 @@ public void displayAllMusic()
         if(musicPosition<listmp3.size()-1&&musicPosition!=-1)
         {
             musicPosition++;
+
             musicPlayer.playMusic(listmp3.get(musicPosition));
             setMusicMode(true);
+
+            //listview.performItemClick(listview.getChildAt(musicPosition), musicPosition, listview.getItemIdAtPosition(musicPosition));//Simule un click pour activer la method onItemClick pour changer la couleur du background
         }
 
 
@@ -525,26 +623,165 @@ public void displayAllMusic()
         {
             //joue lA MUSIQUE PRéCédante
             musicPosition--;
+            //listview.performItemClick(listview.getChildAt(musicPosition), musicPosition, listview.getItemIdAtPosition(musicPosition));//Simule un click pour activer la method onItemClick pour changer la couleur du background
             musicPlayer.playMusic(listmp3.get(musicPosition));
+
         }else
         {
             //Recommence la musique
             musicPlayer.startMusicAtTime(0);
+
         }
         setMusicMode(true);
     }
     public void maximiseClick(View view)
     {
-        if(isShufflePressed)//Si le bouton est déjà cliqué
-        {
-            view.setBackgroundResource(R.drawable.random);//met en noir
-            isShufflePressed=false;
+        //Cache le bouton actuel et affiche l'autre
+        view.setVisibility(View.GONE);
+        View btnMinimise = findViewById(R.id.btnMinimise);
+        View btnPlay = findViewById(R.id.btnPlay);
+        View btnPrevious = findViewById(R.id.btnPrevious);
+        View btnNext = findViewById(R.id.btnNext);
+        View btnShuffle = findViewById(R.id.btnShuffle);
+        View btnReplay = findViewById(R.id.btnReplay);
+        View volumeBar = findViewById(R.id.volumeBar);
 
-        }else
-        {
-            view.setBackgroundResource(R.drawable.randomblue);//met en blue (Selectionné)
-            isShufflePressed=true;
 
+        //Récupère l'input et le bouton paramètre
+        View input_search = findViewById(R.id.input_search);
+        View settings = findViewById(R.id.btnParameter);
+
+        //affiche l'input et cache le bouton des paramètres
+        input_search.setVisibility(View.GONE);
+        settings.setVisibility(View.VISIBLE);
+
+        btnShuffle.setVisibility(View.VISIBLE);
+        btnReplay.setVisibility(btnMinimise.VISIBLE);
+
+
+        Animation fadeIn = new AlphaAnimation(0, 1);
+        fadeIn.setInterpolator(new DecelerateInterpolator()); //add this
+        fadeIn.setDuration(1000);
+
+        Animation fadeOut = new AlphaAnimation(1, 0);
+        fadeOut.setInterpolator(new AccelerateInterpolator()); //and this
+        //fadeOut.setStartOffset(200); //Se lance en décalé
+        fadeOut.setDuration(200);
+
+        view.startAnimation(fadeOut);
+
+
+        int distanceX = -360;
+        int distanceY = -60;
+
+        btnPlay.animate().translationX(distanceX).start();
+        btnPrevious.animate().translationX(distanceX).start();
+        btnNext.animate().translationX(distanceX).start();
+        btnPlay.animate().translationY(distanceY).start();
+        btnPrevious.animate().translationY(distanceY).start();
+        btnNext.animate().translationY(distanceY).start();
+
+
+        resizeButton(60,40);
+
+
+        btnReplay.startAnimation(fadeIn);
+        btnShuffle.startAnimation(fadeIn);
+        volumeBar.startAnimation(fadeIn);
+        volumeBar.setVisibility(View.VISIBLE);
+
+        viewFlipper.setDisplayedChild(0);
+
+        View playlist = findViewById(R.id.btnPlaylist);
+        View explorer = findViewById(R.id.btnExplorer);
+        View search = findViewById(R.id.btnSearch);
+
+        search.setBackgroundResource(R.drawable.search);
+        playlist.setBackgroundResource(R.drawable.playlist);
+        explorer.setBackgroundResource(R.drawable.folder);
+        isMaximised=true;
+        lastTab.add(3);
+        isAlreadyBack=false;
+
+    }
+
+    public void resizeButton(int sizeOne, int sizeTwo)
+{
+
+    View btnPlay = findViewById(R.id.btnPlay);
+    View btnPrevious = findViewById(R.id.btnPrevious);
+    View btnNext = findViewById(R.id.btnNext);
+
+    //redimensionner les boutons
+    final float scale = getResources().getDisplayMetrics().density;
+    int heightDp = (int) (sizeOne * scale + 0.5f);
+    ViewGroup.LayoutParams params = btnPlay.getLayoutParams();
+    params.height = heightDp;
+    params.width = heightDp;
+    btnPlay.setLayoutParams(params);
+    btnPlay.requestLayout();
+
+    heightDp = (int) (sizeTwo * scale + 0.5f);
+    params = btnPrevious.getLayoutParams();
+    params.width = heightDp;
+    params.height = heightDp;
+    btnPrevious.setLayoutParams(params);
+    btnPrevious.requestLayout();
+
+    params = btnNext.getLayoutParams();
+    params.width = heightDp;
+    params.height = heightDp;
+
+    btnNext.setLayoutParams(params);
+    btnNext.requestLayout();
+}
+    public void minimiseClick(View view)
+    {
+        if(isMaximised) {
+            View btnMaximise = findViewById(R.id.btnMaximise);
+            View btnPlay = findViewById(R.id.btnPlay);
+            View btnPrevious = findViewById(R.id.btnPrevious);
+            View btnNext = findViewById(R.id.btnNext);
+            View btnShuffle = findViewById(R.id.btnShuffle);
+            View btnReplay = findViewById(R.id.btnReplay);
+            View volumeBar = findViewById(R.id.volumeBar);
+
+
+            Animation fadeIn = new AlphaAnimation(0, 1);
+            fadeIn.setInterpolator(new DecelerateInterpolator()); //add this
+            fadeIn.setDuration(1000);
+
+            Animation fadeOut = new AlphaAnimation(1, 0);
+            fadeOut.setInterpolator(new AccelerateInterpolator()); //and this
+            //fadeOut.setStartOffset(200); //Se lance en décalé
+            fadeOut.setDuration(200);
+
+
+            btnMaximise.startAnimation(fadeIn);
+            btnMaximise.setVisibility(View.VISIBLE);
+
+            btnShuffle.startAnimation(fadeOut);
+            btnReplay.startAnimation(fadeOut);
+            volumeBar.startAnimation(fadeOut);
+
+            volumeBar.setVisibility(View.GONE);
+            btnShuffle.setVisibility(View.GONE);
+            btnReplay.setVisibility(View.GONE);
+
+
+            int distanceX = 10;
+            int distanceY = 10;
+
+            btnPlay.animate().translationX(distanceX).start();
+            btnPrevious.animate().translationX(distanceX).start();
+            btnNext.animate().translationX(distanceX).start();
+            btnPlay.animate().translationY(distanceY).start();
+            btnPrevious.animate().translationY(distanceY).start();
+            btnNext.animate().translationY(distanceY).start();
+
+            resizeButton(70,50);
+
+            isMaximised=false;
         }
     }
 

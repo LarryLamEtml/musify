@@ -25,7 +25,7 @@
     <SurfaceView
         android:id="@+id/ContentSurface"
         android:layout_width="match_parent"
-        android:layout_height="275dp"
+        android:layout_height="350dp"
         android:background="@color/colorWhite"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -35,11 +35,18 @@
     <ViewFlipper
         android:id="@+id/viewFlipper"
         android:layout_width="match_parent"
-        android:layout_height="275dp"
+        android:layout_height="310dp"
         app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/ContentSurface">
+
+        <RelativeLayout
+            android:id="@+id/musicLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/searchLayout"
@@ -96,7 +103,9 @@
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/btnExplore"
                 app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@id/btnExplore" />
+                app:layout_constraintTop_toTopOf="@id/btnExplore"
+                android:drawSelectorOnTop="false"
+                android:listSelector="@color/colorBlue"/>
         </RelativeLayout>
     </ViewFlipper>
 
@@ -139,70 +148,84 @@
         app:layout_constraintTop_toTopOf="@+id/HeaderSurface"/>
 
     <Button
-        android:id="@+id/btnPrevious"
-        android:layout_width="40dp"
+        android:id="@+id/btnMaximise"
+        android:layout_width="45dp"
         android:layout_height="40dp"
-        android:layout_marginBottom="41dp"
-        android:layout_marginLeft="20dp"
-        android:background="@drawable/previous"
-        android:onClick="previousClick"
-        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
-        app:layout_constraintLeft_toRightOf="@+id/btnReplay" />
-
-    <Button
-        android:id="@+id/btnReplay"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginBottom="44dp"
-        android:layout_marginLeft="34dp"
-        android:background="@drawable/replay"
-        android:onClick="replayClick"
-        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
-        app:layout_constraintLeft_toLeftOf="parent" />
-
-    <Button
-        android:id="@+id/btnUp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginBottom="85dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="25dp"
+        android:layout_marginStart="15dp"
         android:background="@drawable/arrow"
         android:onClick="maximiseClick"
         app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
-        android:id="@+id/btnShuffle"
-        android:layout_width="35dp"
-        android:layout_height="30dp"
-        android:layout_marginBottom="44dp"
-        android:layout_marginLeft="22dp"
-        android:background="@drawable/random"
-        android:onClick="shuffleClick"
+        android:id="@+id/btnMinimise"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="95dp"
+        android:layout_marginStart="15dp"
+        android:background="@drawable/arrowdown"
+        android:onClick="minimiseClick"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
-        app:layout_constraintLeft_toRightOf="@+id/btnNext" />
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <Button
+        android:id="@+id/btnReplay"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginStart="35dp"
+        android:background="@drawable/replay"
+        android:onClick="replayClick"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <Button
+        android:id="@+id/btnPrevious"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="21dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/previous"
+        android:onClick="previousClick"
+        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
+        app:layout_constraintRight_toLeftOf="@+id/btnPlay" />
 
     <Button
         android:id="@+id/btnPlay"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="31dp"
-        android:layout_marginLeft="25dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="11dp"
+        android:layout_marginEnd="15dp"
         android:background="@drawable/play"
         android:onClick="playClick"
         app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
-        app:layout_constraintLeft_toRightOf="@+id/btnPrevious" />
+        app:layout_constraintRight_toLeftOf="@+id/btnNext" />
 
     <Button
         android:id="@+id/btnNext"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="41dp"
-        android:layout_marginLeft="26dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="21dp"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/next"
         android:onClick="nextClick"
         app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
-        app:layout_constraintLeft_toRightOf="@+id/btnPlay" />
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/btnShuffle"
+        android:layout_width="35dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/random"
+        android:onClick="shuffleClick"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/playerSurface"
+        android:layout_marginEnd="35dp"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <View
         android:id="@+id/separator1"
@@ -281,7 +304,6 @@
         android:textIsSelectable="false"
         android:textSize="14sp"
         app:layout_constraintLeft_toRightOf="@+id/btnAddPlaylist"
-        android:layout_marginLeft="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/musicTitle" />
 
@@ -289,7 +311,6 @@
         android:id="@+id/fullTimeText"
         android:layout_width="50dp"
         android:layout_height="20dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:background="@color/colorPrimary"
         android:clickable="false"
@@ -321,7 +342,6 @@
         android:layout_marginStart="25dp"
         android:background="@drawable/addplaylist"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="25dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/musicTitle" />
 
@@ -339,8 +359,8 @@
     <SurfaceView
         android:id="@+id/playerSurface"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginBottom="-2dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="0dp"
         android:background="@color/colorPlayer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -357,16 +377,17 @@
         app:layout_constraintLeft_toRightOf="@+id/actualTimeText"
         android:progressTint="@color/colorProgression"
         android:thumbTint="@color/colorProgression"
-        android:layout_marginLeft="0dp"
+        android:layout_marginStart="0dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/musicTitle" />
 
     <SeekBar
         android:id="@+id/volumeBar"
+        android:visibility="gone"
         android:layout_width="320dp"
         android:layout_height="22dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
         android:foregroundTint="@color/colorProgression"
         android:max="100"
         android:progress="0"
@@ -380,7 +401,7 @@
         android:layout_width="310dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="7dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginStart="30dp"
         android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/viewFlipper"
         app:layout_constraintLeft_toLeftOf="parent" />
